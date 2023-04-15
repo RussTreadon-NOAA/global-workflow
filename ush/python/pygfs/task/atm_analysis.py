@@ -162,7 +162,7 @@ class AtmAnalysis(Analysis):
                 f_out.writelines(f_in)
 
         # open tar file for writing
-        logger.debug(f"Creating tar file {atmstat} with {len(diags)} gzipped diag files"
+        logger.debug(f"Creating tar file {atmstat} with {len(diags)} gzipped diag files")
         with tarfile.open(atmstat, "w") as archive:
             for diagfile in diags:
                 diaggzip = f"{diagfile}.gz"
@@ -170,8 +170,8 @@ class AtmAnalysis(Analysis):
 
         # copy full YAML from executable to ROTDIR
         logger.info(f"Copying {self.task_config.fv3jedi_yaml} to {self.task_config.COMOUTatmos}")
-        src = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmvar.yaml")
-        dest = os.path.join(self.task_config.COMOUTatmos, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atmvar.yaml")
+        src = os.path.join(self.task_config.DATA, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmvar.yaml")
+        dest = os.path.join(self.task_config.COMOUTatmos, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atmvar.yaml")
         logger.debug(f"Copying {src} to {dest}")
         yaml_copy = {
             'mkdir': [self.task_config.COMOUTatmos],
@@ -194,7 +194,7 @@ class AtmAnalysis(Analysis):
         aprefix = f"{self.task_config.APREFIX}"
         asuffix = f"{to_YMDH(self.task_config.current_cycle)}" + ".txt"
 
-        logger.info(f"Copying DATA/ {gprefix}*{gsuffix} to COM/ as {aprefix}*{assuffix}")
+        logger.info(f"Copying {gprefix}*{gsuffix} from DATA/ to COM/ as {aprefix}*{asuffix}")
         obsdir = os.path.join(self.task_config.DATA, 'obs')
         obsls = os.listdir(obsdir)
         for ofile in obsls:
@@ -411,8 +411,8 @@ class AtmAnalysis(Analysis):
         """
         # Select the atm guess file based on the analysis and background resolutions
         # Fields from the atm guess are used to compute the delp and delz increments
-        case_anl = int(self.config.CASE_ANL[1:])
-        case = int(self.config.CASE[1:])
+        case_anl = int(self.task_config.CASE_ANL[1:])
+        case = int(self.task_config.CASE[1:])
 
         file = f"{self.task_config.GPREFIX}" + "atmf006" + f"{'' if case_anl == case else '.ensres'}" + ".nc"
         atmges_fv3 = os.path.join(self.task_config.comin_ges_atm, file)
@@ -422,7 +422,7 @@ class AtmAnalysis(Analysis):
         cdate = to_fv3time(self.task_config.current_cycle)
         cdate_inc = cdate.replace('.', '_')
         atminc_jedi = os.path.join(self.task_config.DATA, 'anl', f'atminc.{cdate_inc}z.nc4')
-        atminc_fv3 = os.path.join(self.task_config.COMOUTatmos, f"{self.task_config.CDUMP}.t{self.runtime_config.cyc:02d}z.atminc.nc")
+        atminc_fv3 = os.path.join(self.task_config.COMOUTatmos, f"{self.task_config.CDUMP}.t{self.task_config.cyc:02d}z.atminc.nc")
 
         # Reference the python script which does the actual work
         incpy = os.path.join(self.task_config.HOMEgfs, 'ush/jediinc2fv3.py')
