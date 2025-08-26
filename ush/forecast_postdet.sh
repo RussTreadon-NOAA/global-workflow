@@ -153,6 +153,19 @@ FV3_postdet() {
         IAU_INC_FILES="''"
       fi
       DO_LAND_IAU=".false."
+
+      if [[ "${NUDGE:-NO}" == "YES" ]]; then
+        read_increment=".true."
+        inc_files=("atminc.tile1.nc" "atminc.tile2.nc" "atminc.tile3.nc" "atminc.tile4.nc" "atminc.tile5.nc" "atminc.tile6.nc")
+        increment_file_on_native_grid=".true."
+        res_latlon_dynamics="atminc"
+
+        for inc_file in "${inc_files[@]}"; do
+          increment_file="${COMIN_ATMOS_ANALYSIS}/${iprefix}cubed_sphere_grid_${PREFIX_ATMINC}${inc_file}"
+          cpreq "${increment_file}" "${DATA}/INPUT/${inc_file}"
+        done	  
+      fi
+
     #--------------------------------------------------------------------------
     else  # "${RERUN}" == "NO"
 
@@ -311,7 +324,7 @@ EOF
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/atmf${FH3}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc"      "${DATAoutput}/FV3ATM_OUTPUT/sfcf${FH3}.nc"
         ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.atm.logf${FH3}.txt" "${DATAoutput}/FV3ATM_OUTPUT/log.atm.f${FH3}"
-        if [[ "${DO_JEDIATMVAR:-}" == "YES" ]]; then
+        if [[ "${DO_JEDIATMVAR:-}" == "YES" || "${NUDGE:-NO}" == "YES" ]]; then
           ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_atmf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_atmf${FH3}.nc"
           ${NLN} "${COMOUT_ATMOS_HISTORY}/${RUN}.t${cyc}z.cubed_sphere_grid_sfcf${FH3}.nc" "${DATAoutput}/FV3ATM_OUTPUT/cubed_sphere_grid_sfcf${FH3}.nc"
           fi

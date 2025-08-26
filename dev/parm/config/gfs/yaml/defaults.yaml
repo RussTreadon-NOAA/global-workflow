@@ -1,5 +1,5 @@
 base:
-  DOIAU: "YES"
+  DOIAU: "NO"
   DO_JEDIATMVAR: "NO"
   DO_JEDIATMENS: "NO"
   DO_JEDIOCNVAR: "NO"
@@ -32,8 +32,8 @@ atmanl:
   JCB_ALGO_YAML_VAR: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar.yaml.j2"
   JCB_ALGO_YAML_FV3INC: "${PARMgfs}/gdas/atm/jcb-prototype_3dvar-fv3inc.yaml.j2"
   STATICB_TYPE: "gsibec"
-  LAYOUT_X_ATMANL: 8
-  LAYOUT_Y_ATMANL: 8
+  LAYOUT_X_ATMANL: 4
+  LAYOUT_Y_ATMANL: 4
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
 

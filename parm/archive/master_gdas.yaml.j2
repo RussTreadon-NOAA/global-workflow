@@ -59,6 +59,8 @@ datasets:
     {% endif %}
 
     {% if save_warm_start_forecast %}
+        # Force save of warm start cycled restarts
+        {% set save_warm_start_cycled = True %}
         # Save warm start forecast-only data
         # Atmosphere restarts
         {% filter indent(width=4) %}

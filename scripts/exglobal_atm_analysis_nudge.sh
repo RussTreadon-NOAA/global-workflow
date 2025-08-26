@@ -1,0 +1,27 @@
+#! /usr/bin/env bash
+
+from pygfs.task.atm_analysis import AtmAnalysis
+
+# Initialize root logger
+logger = Logger(level='DEBUG', colored_log=True)
+
+
+if __name__ == '__main__':
+
+    # Take configuration from environment and cast it as python dictionary
+    config = cast_strdict_as_dtypedict(os.environ)
+
+    # Instantiate the atm analysis task
+    AtmAnl = AtmAnalysis(config)
+
+    # Initialize JEDI variational analysis
+    AtmAnl.initialize()
+
+    # Execute JEDI variational analysis
+    AtmAnl.execute('atmanlvar')
+
+    # Initialize and execute FV3 increment converter
+    AtmAnl.execute('atmanlfv3inc')
+
+    # Finalize JEDI variational analysis
+    AtmAnl.finalize()    

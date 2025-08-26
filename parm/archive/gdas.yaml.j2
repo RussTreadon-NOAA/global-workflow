@@ -160,6 +160,9 @@ gdas:
         {% endfor %}
     optional:
         {% if MODE == "cycled" %}
+            # IODA prep job and conventional_ps observations
+        - "logs/{{ cycle_YMDH }}/{{ RUN }}_prepatmiodaobs.log"
+        - "{{ COMIN_OBS | relpath(ROTDIR) }}/{{ head }}conventional_ps.tm00.nc"
             # Radiance verification (only created if there are problems)
             {% if DO_VERFRAD %}
         - "{{ COMIN_ATMOS_RADMON | relpath(ROTDIR) }}/bad_diag.{{ cycle_YMDH }}"

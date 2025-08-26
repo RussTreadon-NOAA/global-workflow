@@ -34,6 +34,14 @@ case ${RUN} in
     # Determine MIN and MAX based on the forecast segment
     export FHMIN=${segments[${FCST_SEGMENT}]}
     export FHMAX=${segments[${FCST_SEGMENT}+1]}
+    export IDATE=$(date --utc -d "${PDY} ${cyc} + ${FHMIN} hours" +%Y%m%d%H)
+    export iPDY=${IDATE:0:8}
+    export icyc=${IDATE:8:2}
+    export iprefix="${RUN}.${iPDY}.t${icyc}z."
+    ##export NUDGE="NO"
+    ##if [[ ${FHMIN} -gt "0" ]]; then
+    ##    export NUDGE="YES"
+    ##fi
     # Cap other FH variables at FHMAX for the segment
     export FHMIN_WAV=$(( FHMIN > FHMIN_WAV ? FHMIN : FHMIN_WAV ))
     export FHMAX_HF=$(( FHMAX_HF_GFS > FHMAX ? FHMAX : FHMAX_HF_GFS ))
