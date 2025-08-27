@@ -3,6 +3,7 @@
 import sys
 import os
 
+
 def main():
     """
     Takes a forecast hour as a command-line argument and writes a completion
@@ -14,7 +15,7 @@ def main():
     if len(sys.argv) != 2:
         print("Usage: python forecast_completer.py <forecast_hour>")
         print("Example: python forecast_completer.py 12")
-        sys.exit(1) # Exit the script with an error code
+        sys.exit(1)  # Exit the script with an error code
 
     forecast_hour_str = sys.argv[1]
 
@@ -28,7 +29,7 @@ def main():
     # --- 2. File Operations ---
     # Define the name of the output file.
     output_filename = f"forecast_hour_{forecast_hour:03d}_completed.txt"
-    
+
     # Get the directory where the script is located to save the file there.
     script_dir = os.path.dirname(os.path.abspath(__file__))
     output_filepath = os.path.join(script_dir, output_filename)
@@ -43,7 +44,7 @@ def main():
         # overwrites an existing one).
         with open(output_filepath, 'w', encoding='utf-8') as f:
             f.write(content)
-        
+
         print(f"Successfully wrote completion status to: {output_filepath}")
 
     except IOError as e:
@@ -53,5 +54,7 @@ def main():
 
 # --- Script Entry Point ---
 # This ensures the main() function is called only when the script is executed directly.
+
+
 if __name__ == "__main__":
     main()
