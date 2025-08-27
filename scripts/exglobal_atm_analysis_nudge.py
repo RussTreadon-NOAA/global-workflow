@@ -32,4 +32,4 @@ if __name__ == '__main__':
     AtmAnl.execute('atmanlfv3inc')
 
     # Finalize JEDI variational analysis
-    AtmAnl.finalize()    
+    AtmAnl.finalize()
