@@ -14,12 +14,18 @@ if [[ ${status} -ne 0 ]]; then
 fi
 
 
-# Extract gfs atminc
+# Extract gfs atminc.  Create loganl for atmanlupp
 $HTAR -xvf /NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/gsi_test/${PDY}${cyc}/gfs_netcdfa.tar
 status=$?
 if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
+echo "gfs ${PDY}${cyc} atmanl and sfcanl done" > gfs.${PDY}/${cyc}/analysis/atmos/gfs.t${cyc}z.loganl.txt
+
+
+# Extract gsistat for gfs_arch_vrfy, minmon for gfs_arch_tars
+$HTAR -xvf /NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/gsi_test/${PDY}${cyc}/gfsa.tar gfs.${PDY}/${cyc}/analysis/atmos/gfs.t${cyc}z.gsistat
+$HTAR -xvf /NCEPDEV/${HPSS_PROJECT}/1year/${USER}/${machine}/scratch/gsi_test/${PDY}${cyc}/gfsa.tar gfs.${PDY}/${cyc}/products/atmos/minmon
 
 
 # Extract ioda format conventional ps dump

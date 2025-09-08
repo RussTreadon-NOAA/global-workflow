@@ -414,6 +414,8 @@ for file in $(awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq); do
    ${NLN} ${CRTM_FIX}/${file}.TauCoeff.bin ./crtm_coeffs/${file}.TauCoeff.bin
 done
 ${NLN} ${CRTM_FIX}/amsua_metop-a_v2.SpcCoeff.bin ./crtm_coeffs/amsua_metop-a_v2.SpcCoeff.bin
+${NLN} ${CRTM_FIX2}/abi_g19.SpcCoeff.bin         ./crtm_coeffs/abi_g19.SpcCoeff.bin
+${NLN} ${CRTM_FIX2}/abi_g19.TauCoeff.bin         ./crtm_coeffs/abi_g19.TauCoeff.bin
 
 ${NLN} ${CRTM_FIX}/Nalli.IRwater.EmisCoeff.bin   ./crtm_coeffs/Nalli.IRwater.EmisCoeff.bin
 ${NLN} ${CRTM_FIX}/NPOESS.IRice.EmisCoeff.bin    ./crtm_coeffs/NPOESS.IRice.EmisCoeff.bin
