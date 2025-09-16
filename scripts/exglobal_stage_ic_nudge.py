@@ -15,6 +15,7 @@ import sys
 import subprocess
 from datetime import datetime, timedelta
 
+
 def get_env_variable(var_name):
     """
     Fetches an environment variable. Exits with an error if it's not set.
@@ -25,13 +26,14 @@ def get_env_variable(var_name):
         sys.exit(1)
     return value
 
+
 def run_command(command):
     """
     Runs a command using subprocess. Exits if the command fails.
     """
     try:
         # Using subprocess.run is the modern and recommended approach
-        result = subprocess.run(command, check=False) # check=False to handle exit code manually
+        result = subprocess.run(command, check=False)  # check=False to handle exit code manually
         if result.returncode != 0:
             print(f"Error: Command failed with exit code {result.returncode}", file=sys.stderr)
             sys.exit(result.returncode)
@@ -85,7 +87,7 @@ def main():
     gfsa_tar_path = f"/NCEPDEV/{hpss_project}/1year/{user}/{machine}/scratch/gsi_test/{pdy}{cyc}/gfsa.tar"
     gsistat_member = f"gfs.{pdy}/{cyc}/analysis/atmos/gfs.t{cyc}z.gsistat"
     minmon_member = f"gfs.{pdy}/{cyc}/products/atmos/minmon"
-    
+
     run_command(htar_base_command + ["-xvf", gfsa_tar_path, gsistat_member])
     run_command(htar_base_command + ["-xvf", gfsa_tar_path, minmon_member])
 
@@ -95,7 +97,7 @@ def main():
     run_command(htar_base_command + ["-xvf", gdas_tar_path, conventional_ps_member])
 
     # --- Previous Cycle Calculation and Extraction ---
-    
+
     # Calculate the date and cycle for the previous run
     try:
         start_datetime = datetime.strptime(f"{pdy}{cyc}", "%Y%m%d%H")
@@ -111,7 +113,7 @@ def main():
     # Extract gdas restart from the previous cycle
     gdas_restartb_path = f"/NCEPDEV/{hpss_project}/1year/{user}/{machine}/scratch/gsi_test/{gpdy}{gcyc}/gdas_restartb.tar"
     run_command(htar_base_command + ["-xvf", gdas_restartb_path])
-    
+
     # --- Finalization ---
 
     # Create final log file
@@ -119,11 +121,11 @@ def main():
     os.makedirs(os.path.dirname(final_log_path), exist_ok=True)
     with open(final_log_path, "w") as f:
         f.write(f"stage_ic_nudge done for {pdy}{cyc}\n")
-    
+
     print("################################################################################")
     print("Script finished successfully.")
     sys.exit(0)
 
+
 if __name__ == "__main__":
     main()
-
