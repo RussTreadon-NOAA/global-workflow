@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+import contextlib
 import glob
 import os
 import shutil
 import tarfile
+import tempfile
 from logging import getLogger
 from typing import List, Tuple, Union
 from wxflow import (AttrDict, FileHandler, Hsi, Htar, Task, to_timedelta,
@@ -239,7 +241,7 @@ class Archive(Task):
             # Convert COMIN paths from absolute to relative before creating fileset
             dataset = self._convert_dataset_paths_to_relative(dataset, arch_dict['ROTDIR'])
 
-            dataset["fileset"] = Archive._create_fileset(dataset)
+            dataset["fileset"] = Archive._create_fileset(dataset, arch_dict['ROTDIR'])
             dataset["has_rstprod"] = Archive._has_rstprod(dataset.fileset)
 
             atardir_sets.append(AttrDict(dataset))
@@ -375,7 +377,7 @@ class Archive(Task):
 
     @staticmethod
     @logit(logger)
-    def _create_fileset(atardir_set: AttrDict) -> List:
+    def _create_fileset(atardir_set: AttrDict, rotdir: str = None) -> List:
         """
         Collect the list of all available files from the parsed yaml dict.
         Globs are expanded and if required files are missing, an error is
@@ -389,6 +391,9 @@ class Archive(Task):
         ----------
         atardir_set: AttrDict
             Contains full paths for required and optional files to be archived.
+        rotdir: str, optional
+            When provided, glob expansion for relative paths is performed with
+            this directory as the working directory.
         """
 
         fileset = []
@@ -397,26 +402,28 @@ class Archive(Task):
             # Run the file handler to stage files for archiving
             FileHandler(atardir_set["FileHandler"]).sync()
 
-        # Check that all required files are present and add them to the list of files to archive
-        if "required" in atardir_set:
-            if atardir_set['required'] is not None:
-                for item in atardir_set['required']:
-                    glob_set = glob.glob(item)
-                    if len(glob_set) == 0:
-                        raise FileNotFoundError(f"FATAL ERROR: Required file, directory, or glob {item} not found!")
-                    for entry in glob_set:
-                        fileset.append(entry)
+        with chdir(rotdir) if rotdir is not None else contextlib.nullcontext():
 
-        # Check for optional files and add found items to the list of files to archive
-        if "optional" in atardir_set:
-            if atardir_set['optional'] is not None:
-                for item in atardir_set['optional']:
-                    glob_set = glob.glob(item)
-                    if len(glob_set) == 0:
-                        logger.warning(f"WARNING: optional file/glob {item} not found!")
-                    else:
+            # Check that all required files are present and add them to the list of files to archive
+            if "required" in atardir_set:
+                if atardir_set['required'] is not None:
+                    for item in atardir_set['required']:
+                        glob_set = glob.glob(item)
+                        if len(glob_set) == 0:
+                            raise FileNotFoundError(f"FATAL ERROR: Required file, directory, or glob {item} not found!")
                         for entry in glob_set:
                             fileset.append(entry)
+
+            # Check for optional files and add found items to the list of files to archive
+            if "optional" in atardir_set:
+                if atardir_set['optional'] is not None:
+                    for item in atardir_set['optional']:
+                        glob_set = glob.glob(item)
+                        if len(glob_set) == 0:
+                            logger.warning(f"WARNING: optional file/glob {item} not found!")
+                        else:
+                            for entry in glob_set:
+                                fileset.append(entry)
 
         return fileset
 
@@ -607,10 +614,17 @@ class Archive(Task):
 
             out_lines = [line.replace(search_str, replace_str) for line in lines]
 
-            with open("/tmp/track_file", "w") as new_file:
-                new_file.writelines(out_lines)
-
-            shutil.move("/tmp/track_file", filename_out)
+            tmp_path = None
+            try:
+                with tempfile.NamedTemporaryFile(mode='w', delete=False,
+                                                 dir=os.path.dirname(filename_out)) as tmp_file:
+                    tmp_path = tmp_file.name
+                    tmp_file.writelines(out_lines)
+                shutil.move(tmp_path, filename_out)
+            except Exception:
+                if tmp_path is not None and os.path.exists(tmp_path):
+                    os.unlink(tmp_path)
+                raise
 
         replace_string_from_to_file(in_track_file, out_track_file, "AVNO", pslot4)
         replace_string_from_to_file(in_track_p_file, out_track_p_file, "AVNO", pslot4)
