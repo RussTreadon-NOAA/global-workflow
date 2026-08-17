@@ -94,8 +94,10 @@ def calcanl_gcafs(RunDir, ComOut, APrefix):
                 anl = bkg
             else:
                 increment = incfile.variables[incname][:]
-                # reordering the dimensions of increment (latitude, longitude, levels) to macth background (time, levs, lat, lon)
-                increment_reshape = np.transpose(increment, (2, 0, 1))
+                # OOPS StructuredGridWriter now writes aerosol increments as
+                # (levels, latitude, longitude), which already matches the
+                # background layout after the time dimension is added.
+                increment_reshape = increment
                 anl = bkg + increment_reshape[np.newaxis, :, :, :]
 
             anlfile.variables[ioname][:] = anl[:]
