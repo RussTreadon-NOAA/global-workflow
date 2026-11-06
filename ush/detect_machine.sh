@@ -82,13 +82,18 @@ elif [[ -d /lfs/home ]]; then
     MACHINE_ID=nimbus
 elif [[ -d /scratch3 ]]; then
     # We are on NOAA Hera or Ursa
-    mount=$(findmnt -n -o SOURCE /apps) || true # /home doesn't exist on the GitHub runners
-    if [[ ${mount} =~ "ursa" ]]; then
+    # Hostname-based detection for Ursa front-end and compute nodes
+    if [[ $(hostname -s) =~ ^ufe || $(hostname -s) =~ ^uecflow ]]; then
         MACHINE_ID=ursa
-    elif [[ ${mount} =~ "hera" ]]; then
-        MACHINE_ID=hera
-    else # Assume we are on the GitHub runners, which mock Hera
-        MACHINE_ID=hera
+    else
+        mount=$(findmnt -n -o SOURCE /apps) || true # /home doesn't exist on the GitHub runners
+        if [[ ${mount} =~ "ursa" ]]; then
+            MACHINE_ID=ursa
+        elif [[ ${mount} =~ "hera" ]]; then
+            MACHINE_ID=hera
+        else # Assume we are on the GitHub runners, which mock Hera
+            MACHINE_ID=hera
+        fi
     fi
 elif [[ -d /work ]]; then
     # We are on MSU Orion or Hercules
